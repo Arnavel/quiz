@@ -56,7 +56,3 @@ function getQuestion($id = 0){
 
 
 }
-
-
-print_r(getQuestion());
-
