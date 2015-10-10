@@ -1,8 +1,19 @@
 <?
 require __DIR__ . '/../functions/database.php';
+session_start();
 
-function getQuestions($count){
-    $select = SelectQuestion($count);
+/**/
+function SelectQuestion($count = '50')
+{
+    $pdo = db_connect();
+    $sql = $pdo->prepare('SELECT * FROM data LIMIT :count');
+    $sql->execute([':count' => $count]);
+    return $sql;
+}
+
+//Функция обрабатывает результат запроса к базе, приводя его к нужному массиву
+function UpdateQuestion(){
+    $select = SelectQuestion();
     $new_array = [];
     $count = 0;
     while ($row = $select->fetch()) {
@@ -18,6 +29,24 @@ function getQuestions($count){
     }
     return $new_array;
 }
-$new = getQuestions(2);
-print_r($new);
+
+
+
+function getQuestion($id=0){
+    $question_array = UpdateQuestion();
+    $one_question = $question_array[$id];
+    if ($_SESSION['givenQuestions'] == null) {
+        $_SESSION['givenQuestions'] = [];
+    }
+    if (array_search($id, $_SESSION['givenQuestions']) !== false) {
+        $id++;
+        return getQuestion($id);
+    }
+    else {
+        $_SESSION['givenQuestions'][] = $id;
+        return $one_question;
+    }
+
+}
+var_dump(getQuestion());
 

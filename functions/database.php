@@ -11,13 +11,6 @@ function db_connect()
     $connect = new PDO($dsn, 'root', '', $opt);
     return $connect;
 }
-/**/
-function SelectQuestion($count)
-{
-    $pdo = db_connect();
-    $sql = $pdo->prepare('SELECT * FROM data LIMIT :count');
-    $sql->execute([':count' => $count]);
-    return $sql;
-}
+
 
 
