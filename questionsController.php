@@ -59,7 +59,7 @@ if (is_null($method)) {
 switch ($method) {
    case 'getQuestion':
       $question = getQuestion();
-      if ($question !== '') {
+      if ($question !== false) {
          include __DIR__ . '/Views/question.php';
       } else {
          $_SESSION['gameResult'] = RESULT_OK;
