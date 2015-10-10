@@ -46,13 +46,12 @@ function getQuestion($id = 0){
     if (array_search ($id, $_SESSION['givenQuestions']) !== false) {
         $id++;
         return getQuestion ($id);
-    } else {
+    }
+    else {
         $_SESSION['givenQuestions'][] = $id;
         $correct = $one_question['answers'][0];
         shuffle($one_question['answers']);
         $_SESSION['answer'] = array_search($correct, $one_question['answers']);
         return $one_question;
     }
-
-
 }
