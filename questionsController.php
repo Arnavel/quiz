@@ -19,7 +19,6 @@ function getQuestion()
       'answers'  => ['1', '22', '4', '2+2'],
    ];
 
-
 }
 
 function addPoints($amount) {
@@ -79,6 +78,7 @@ switch ($method) {
    case 'endGame':
       $points = getPoints();
       clearPoints();
+      $_SESSION['givenQuestions'] = [];
       include __DIR__ . '/Views/gameResult.php';
       break;
 }
