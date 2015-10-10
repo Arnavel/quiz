@@ -2,24 +2,12 @@
 
 session_start();
 
-//require_once __DIR__ . '/models/question.php';
+require_once __DIR__ . '/models/question.php';
 
 const RESULT_OK            = 1;
 const RESULT_WRONG         = 2;
 const RESULT_ERROR         = 3;
 const RESULT_LIMIT_REACHED = 4;
-
-function getQuestion()
-{
-
-   $_SESSION['answer'] = '2';
-
-   return [
-      'question' => 'Сколько будет 2+2?',
-      'answers'  => ['1', '22', '4', '2+2'],
-   ];
-
-}
 
 function addPoints($amount) {
    ++$_SESSION['points'];
@@ -59,7 +47,7 @@ if (is_null($method)) {
 switch ($method) {
    case 'getQuestion':
       $question = getQuestion();
-      if ($question !== '') {
+      if ($question !== false) {
          include __DIR__ . '/Views/question.php';
       } else {
          $_SESSION['gameResult'] = RESULT_OK;
