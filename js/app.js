@@ -7,12 +7,16 @@ function postAJAX(body, handler, callback) {
    xhr.onreadystatechange = callback.bind(xhr);
 
    xhr.send(body);
+
+   return xhr;
 }
 
 function checkAnswer(id) {
 
-   var body = 'id=' + encodeURIComponent(id);
-   postAJAX(body, '/check.php', function() {
+   var body = 'method=' + encodeURIComponent('checkAnswer') +
+              '&id='    + encodeURIComponent(id);
+
+   postAJAX(body, '/questionsController.php', function() {
       if (this.readyState !== 4) {
          return;
       }
@@ -20,17 +24,18 @@ function checkAnswer(id) {
       var response = this.responseText;
       switch (response) {
          case '1':
-            alert('Правильный ответ');
-            nextQuestion();
+            nextQuestion(
+               updatePointsView
+            );
             break;
          case '2':
-            alert('Неправильный ответ');
+            endGame()
             break;
          case '3':
-            alert('Ошибка');
+            // ОШИБКА: Не был отправлен Id ответа
             break;
          default :
-            alert('Неправильный формат данных');
+            // ОШИБКА: Идентификатор ответа, отправленный сервером, неизвестен
             break;
       }
 
@@ -38,37 +43,94 @@ function checkAnswer(id) {
 
 }
 
-function nextQuestion() {
+function nextQuestion(callback) {
 
    var body = 'method=' + encodeURIComponent('getQuestion');
-   postAJAX(body, '/questions.php', function() {
+
+   postAJAX(body, '/questionsController.php', function() {
       if (this.readyState !== 4) {
          return;
       }
 
-      var questionContent = document.querySelector('.question');
-      questionContent.innerHTML = this.responseText;
+      var response = this.responseText;
+      if (response == '4') {
+         endGame();
+         return;
+      }
+
+      var contentElement = document.querySelector('.content');
+      contentElement.innerHTML = this.responseText;
 
       addOnClickListener();
+
+      if (arguments.length > 0) {
+         callback();
+      }
 
    });
 }
 
+function endGame() {
+
+   var body = 'method=' + encodeURIComponent('endGame');
+
+   postAJAX(body, '/questionsController.php', function() {
+      if (this.readyState !== 4) {
+         return;
+      }
+
+      var contentElement = document.querySelector('.content');
+      contentElement.innerHTML = this.responseText;
+
+   });
+
+}
+
+function updatePointsView() {
+
+   var body = 'method=' + encodeURIComponent('getPoints');
+
+   postAJAX(body, '/questionsController.php', function() {
+      if (this.readyState !== 4) {
+         return;
+      }
+
+      var pointsElement = document.querySelector('.points__value');
+      pointsElement.innerHTML = this.responseText;
+
+   });
+
+}
+
+/**
+ * Подключение обработчика на клик по кнопке "Ответить"
+ */
 function addOnClickListener() {
-   // Подключение обработчика на клик по кнопке "Ответить"
+
    var element = document.querySelector('.question__submit-btn');
    if (element !== null) {
       element.addEventListener('click', function(event) {
 
          event.preventDefault();
 
-         var id = event.id;
-         checkAnswer(id);
+         var id = null;
+         var radioElements = document.querySelectorAll('.question__answer');
+         for (var i = 0; i < radioElements.length; i++) {
+            if (radioElements[i].checked) {
+               id = radioElements[i].id;
+            }
+         }
+
+         if (id !== null) {
+            checkAnswer(id);
+         }
 
       });
    }
 }
 
 window.onload = function() {
-   nextQuestion();
+   nextQuestion(
+      updatePointsView
+   );
 }
