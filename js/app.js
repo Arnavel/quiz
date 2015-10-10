@@ -40,17 +40,35 @@ function checkAnswer(id) {
 
 function nextQuestion() {
 
-}
+   var body = 'method=' + encodeURIComponent('getQuestion');
+   postAJAX(body, '/questions.php', function() {
+      if (this.readyState !== 4) {
+         return;
+      }
 
-// Подключение обработчика на клик по кнопке "Ответить"
-element = document.querySelector('.question__submit-btn');
-if (element !== null) {
-   element.addEventListener('click', function(event) {
+      var questionContent = document.querySelector('.question');
+      questionContent.innerHTML = this.responseText;
 
-      event.preventDefault();
-
-      var id = event.id;
-      checkAnswer(id);
+      addOnClickListener();
 
    });
+}
+
+function addOnClickListener() {
+   // Подключение обработчика на клик по кнопке "Ответить"
+   var element = document.querySelector('.question__submit-btn');
+   if (element !== null) {
+      element.addEventListener('click', function(event) {
+
+         event.preventDefault();
+
+         var id = event.id;
+         checkAnswer(id);
+
+      });
+   }
+}
+
+window.onload = function() {
+   nextQuestion();
 }
