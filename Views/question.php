@@ -14,7 +14,7 @@
 
       <div class="row">
          <div class="col-md-9">
-            <button type="submit" class="btn btn-primary">Ответить</button>
+            <button type="submit" class="question__submit-btn btn btn-primary">Ответить</button>
          </div>
       </div>
 
